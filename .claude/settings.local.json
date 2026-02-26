@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(npm view auto-launch version)",
+      "Bash(npm view node-notifier version)",
+      "Bash(npm view node-schedule version)",
+      "Bash(npm view semver version)",
+      "Bash(npm view chalk version)",
+      "Bash(npm view ora version)",
+      "Bash(npm view node-notifier readme)",
+      "Bash(npm view auto-launch readme)",
+      "Bash(npm view node-schedule readme)",
+      "Bash(npm view semver readme)",
+      "Bash(npm view which readme)",
+      "Bash(npm view chalk@5 type)",
+      "Bash(npm view ora@8 type)",
+      "Bash(npm view chalk@4 version)",
+      "Bash(npm view ora@5 version)",
+      "Bash(npm view auto-launch dependencies)",
+      "Bash(npm install)",
+      "Bash(npx tsc)",
+      "Bash(node dist/index.js --help)",
+      "Bash(node dist/index.js --check)",
+      "Bash(node dist/index.js --version)",
+      "Bash(node dist/index.js --status)"
+    ]
+  }
+}

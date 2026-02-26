@@ -1,0 +1,55 @@
+{
+  "name": "ai-tool-updater",
+  "version": "1.0.0",
+  "description": "跨平台 AI CLI 工具自动更新检查器 (Claude Code, Codex, OpenCode 等)",
+  "main": "dist/index.js",
+  "bin": {
+    "aiuc": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "postinstall": "node dist/postinstall.js || true"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "update",
+    "checker",
+    "claude-code",
+    "codex",
+    "opencode",
+    "aider",
+    "copilot",
+    "cross-platform"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "auto-launch": "^5.0.6",
+    "chalk": "^4.1.2",
+    "node-notifier": "^10.0.1",
+    "ora": "^5.4.1",
+    "semver": "^7.6.3"
+  },
+  "devDependencies": {
+    "@types/auto-launch": "^5.0.5",
+    "@types/node": "^20.11.0",
+    "@types/node-notifier": "^8.0.5",
+    "@types/semver": "^7.5.6",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

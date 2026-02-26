@@ -1,0 +1,94 @@
+# CI/CD 流水线 - 自动构建、测试并发布到 npm
+#
+# 触发条件：
+# 1. 推送 tag (v*) 时 → 构建 + 发布到 npm
+# 2. 推送到 main 分支时 → 仅构建验证
+# 3. Pull Request → 仅构建验证
+
+name: CI & Publish to npm
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']       # 推送 v1.0.0 这样的 tag 时触发发布
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ────────────────────────────────────────────
+  # Job 1: 构建和验证（每次推送/PR 都运行）
+  # ────────────────────────────────────────────
+  build:
+    name: Build & Verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # 跨平台验证：确保 Windows、Mac、Linux 都能正常构建
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [18, 20]
+
+    steps:
+      # 1. 拉取代码
+      - uses: actions/checkout@v4
+
+      # 2. 安装 Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # 3. 安装依赖
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. TypeScript 编译
+      - name: Build
+        run: npm run build
+
+      # 5. 验证 CLI 可运行
+      - name: Verify CLI works
+        run: node dist/index.js --version
+
+      # 6. 验证 --help 输出
+      - name: Verify help output
+        run: node dist/index.js --help
+
+      # 7. 验证 --check 模式（实际检查已安装的工具）
+      - name: Verify check mode
+        run: node dist/index.js --check
+        continue-on-error: true  # CI 环境可能没有安装 AI 工具
+
+  # ────────────────────────────────────────────
+  # Job 2: 发布到 npm（仅在推送 tag 时运行）
+  # ────────────────────────────────────────────
+  publish:
+    name: Publish to npm
+    needs: build             # 必须等构建通过
+    if: startsWith(github.ref, 'refs/tags/v')  # 仅 tag 触发
+    runs-on: ubuntu-latest
+
+    # 声明 npm 发布权限
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # 发布到 npm（使用 --provenance 增加包的可信度）
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

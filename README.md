@@ -68,6 +68,14 @@ aiuc --check
 aiuc --status
 ```
 
+```
+  AI Tool Updater 状态
+  ─────────────────────────
+  开机自启:   已启用
+  检查间隔:   12 小时
+  上次检查:   2026/2/26 08:56:26 (5 分钟前)
+```
+
 ### 所有命令
 
 ```
@@ -145,6 +153,8 @@ src/
 └── postinstall.ts   安装脚本 — npm install 后自动配置
 ```
 
+> 详细的源码逐行讲解请参阅 [WALKTHROUGH.md](WALKTHROUGH.md)
+
 ## 添加新工具
 
 编辑 `src/tools.ts`，在 `TOOLS` 数组中追加：
@@ -159,6 +169,26 @@ src/
   packageManager: 'npm',  // 或 'pip'
   updateCommand: ['npm', 'install', '-g', 'npm-package-name@latest'],
 },
+```
+
+不需要修改其他任何文件。
+
+## 开发
+
+```bash
+# 安装依赖
+npm install
+
+# 编译
+npm run build
+
+# 本地测试
+node dist/index.js --check
+node dist/index.js --help
+
+# 本地全局安装测试
+npm install -g .
+aiuc --check
 ```
 
 ## 发布到 npm

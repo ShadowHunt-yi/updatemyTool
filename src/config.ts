@@ -28,6 +28,30 @@ const DEFAULT_CONFIG: Config = {
   autoStartEnabled: true,
 };
 
+function sanitizeConfig(input: unknown): Config {
+  const obj = (input && typeof input === 'object') ? (input as Record<string, unknown>) : {};
+
+  const lastCheckTimeRaw = obj.lastCheckTime;
+  const lastCheckTime =
+    typeof lastCheckTimeRaw === 'number' && Number.isFinite(lastCheckTimeRaw) && lastCheckTimeRaw >= 0
+      ? lastCheckTimeRaw
+      : DEFAULT_CONFIG.lastCheckTime;
+
+  const checkIntervalHoursRaw = obj.checkIntervalHours;
+  const checkIntervalHoursCandidate =
+    typeof checkIntervalHoursRaw === 'number' && Number.isFinite(checkIntervalHoursRaw)
+      ? checkIntervalHoursRaw
+      : DEFAULT_CONFIG.checkIntervalHours;
+  // Clamp to a reasonable range to avoid busy loops or extremely large timers.
+  const checkIntervalHours = Math.min(24 * 30, Math.max(1, Math.round(checkIntervalHoursCandidate)));
+
+  const autoStartEnabledRaw = obj.autoStartEnabled;
+  const autoStartEnabled =
+    typeof autoStartEnabledRaw === 'boolean' ? autoStartEnabledRaw : DEFAULT_CONFIG.autoStartEnabled;
+
+  return { lastCheckTime, checkIntervalHours, autoStartEnabled };
+}
+
 /**
  * 从磁盘读取配置
  * 如果文件不存在或损坏，返回默认值
@@ -38,13 +62,12 @@ export function loadConfig(): Config {
     if (fs.existsSync(CONFIG_FILE)) {
       const raw = fs.readFileSync(CONFIG_FILE, 'utf-8');
       const parsed = JSON.parse(raw);
-      // 合并：已有配置覆盖默认值，确保新增字段有默认值
-      return { ...DEFAULT_CONFIG, ...parsed };
+      return sanitizeConfig({ ...DEFAULT_CONFIG, ...parsed });
     }
   } catch {
     // 配置文件损坏时返回默认值
   }
-  return { ...DEFAULT_CONFIG };
+  return sanitizeConfig(DEFAULT_CONFIG);
 }
 
 /**
@@ -53,7 +76,7 @@ export function loadConfig(): Config {
 export function saveConfig(config: Config): void {
   try {
     ensureDir(CONFIG_DIR);
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8');
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(sanitizeConfig(config), null, 2), 'utf-8');
   } catch {
     // 保存失败静默忽略
   }

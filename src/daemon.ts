@@ -47,6 +47,7 @@ async function runCheckCycle(): Promise<void> {
 export async function startDaemon(): Promise<void> {
   const config = loadConfig();
   const intervalMs = config.checkIntervalHours * 60 * 60 * 1000;
+  let isRunning = false;
 
   log(`守护进程启动，检查间隔: ${config.checkIntervalHours} 小时`);
 
@@ -62,8 +63,17 @@ export async function startDaemon(): Promise<void> {
   // 设置定时器：每隔 intervalMs 毫秒执行一次检查
   // 使用 setInterval 而非 node-schedule，减少依赖
   setInterval(async () => {
+    if (isRunning) {
+      log('定时检查触发：上一次检查尚未结束，跳过本次触发');
+      return;
+    }
+    isRunning = true;
     log('定时检查触发');
-    await runCheckCycle();
+    try {
+      await runCheckCycle();
+    } finally {
+      isRunning = false;
+    }
   }, intervalMs);
 
   // 进程不会退出，setInterval 会保持事件循环活跃

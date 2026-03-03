@@ -8,9 +8,21 @@
  */
 
 import AutoLaunch = require('auto-launch');
+import * as fs from 'fs';
+import * as path from 'path';
 import { log } from './utils';
 
 let launcher: AutoLaunch | null = null;
+
+function resolveDaemonEntryScript(): string {
+  // Prefer the compiled CLI entry next to this file (dist/index.js).
+  // This avoids accidentally registering postinstall.js or other callers.
+  const distIndex = path.resolve(__dirname, 'index.js');
+  if (fs.existsSync(distIndex)) return distIndex;
+
+  // Fallback for uncommon dev setups (e.g. running TS directly).
+  return process.argv[1];
+}
 
 /**
  * 获取 AutoLaunch 实例（单例模式）
@@ -22,8 +34,7 @@ let launcher: AutoLaunch | null = null;
  */
 function getLauncher(): AutoLaunch {
   if (!launcher) {
-    // process.argv[1] 是当前脚本路径 (dist/index.js)
-    const scriptPath = process.argv[1];
+    const scriptPath = resolveDaemonEntryScript();
 
     // auto-launch 库实际支持 args 参数，但 @types/auto-launch 类型定义中缺失
     // 使用 as any 绕过 TypeScript 类型检查

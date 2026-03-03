@@ -153,7 +153,7 @@ src/
 └── postinstall.ts   安装脚本 — npm install 后自动配置
 ```
 
-> 详细的源码逐行讲解请参阅 [WALKTHROUGH.md](WALKTHROUGH.md)
+> 如需更深入的源码说明，可在仓库 Wiki / 文档中补充维护。
 
 ## 添加新工具
 

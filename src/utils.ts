@@ -56,6 +56,7 @@ export async function runCommand(command: string, args: string[], timeoutMs = 30
       env: { ...process.env },
       // Windows 下 npm/codex 等命令实际是 .cmd 脚本，必须通过 shell 执行
       shell: process.platform === 'win32',
+      windowsHide: true,
     });
     return stdout.trim();
   } catch {
@@ -75,10 +76,15 @@ export async function runShellCommand(cmd: string, timeoutMs = 120000): Promise<
     const { stdout, stderr } = await execAsync(cmd, {
       timeout: timeoutMs,
       env: { ...process.env },
+      windowsHide: true,
+      maxBuffer: 10 * 1024 * 1024,
     });
     return { ok: true, output: (stdout + '\n' + stderr).trim() };
   } catch (err: any) {
-    return { ok: false, output: err.message || String(err) };
+    const stdout = typeof err?.stdout === 'string' ? err.stdout : '';
+    const stderr = typeof err?.stderr === 'string' ? err.stderr : '';
+    const output = (stdout + '\n' + stderr).trim();
+    return { ok: false, output: output || err?.message || String(err) };
   }
 }
 

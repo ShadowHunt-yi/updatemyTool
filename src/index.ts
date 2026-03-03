@@ -70,7 +70,7 @@ async function showStatus(): Promise<void> {
 
   if (config.lastCheckTime > 0) {
     const lastCheck = new Date(config.lastCheckTime);
-    const ago = Math.round((Date.now() - config.lastCheckTime) / 1000 / 60);
+    const ago = Math.max(0, Math.round((Date.now() - config.lastCheckTime) / 1000 / 60));
     console.log(`  上次检查:   ${lastCheck.toLocaleString()} (${ago} 分钟前)`);
   } else {
     console.log(`  上次检查:   ${chalk.gray('从未检查')}`);

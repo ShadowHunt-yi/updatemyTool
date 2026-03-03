@@ -1,6 +1,6 @@
 {
   "name": "ai-tool-updater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "跨平台 AI CLI 工具自动更新检查器 (Claude Code, Codex, OpenCode 等)",
   "main": "dist/index.js",
   "bin": {

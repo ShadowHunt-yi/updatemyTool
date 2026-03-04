@@ -1,6 +1,6 @@
 {
   "name": "ai-tool-updater",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "跨平台 AI CLI 工具自动更新检查器 (Claude Code, Codex, OpenCode 等)",
   "main": "dist/index.js",
   "bin": {
@@ -31,7 +31,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/ShadowHunt-yi/updatemyTool"
   },
   "author": "",
   "license": "MIT",
